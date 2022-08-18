@@ -1,0 +1,21 @@
+{
+    "main_parameters":{
+        "data_dir":"./data/example.csv",
+        "time_column": ["일자", "%Y/%m/%d"],
+        "value_column": "종가",
+        "experiment_result_path":"./result"
+
+    },
+    "arima_parameters":{
+        
+    },
+    "xgboost_parameters":{
+        
+    },
+    "rnn_parameters":{
+
+    },
+    "lstm_parameters":{
+        "model_save_dir": "./result/lstm/best_model/best_model.pt"
+    }
+}

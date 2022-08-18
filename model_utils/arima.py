@@ -21,16 +21,18 @@ class ARIMA_Model(object):
     def estimate_diff(self):
         kpss_diffs = ndiffs(self.time, alpha=0.05, test='kpss', max_d=6)
         adf_diffs = ndiffs(self.time, alpha=0.05, test='adf', max_d=6)
-        n_diffs = max(adf_diffs, kpss_diffs)
-        print("적절 차분: {}".format(n_diffs))
-        return n_diffs
+        self.n_diffs = max(adf_diffs, kpss_diffs)
+        print("적절 차분: {}".format(self.n_diffs))
+        return self.n_diffs
     
     def build_model(self, diff = 1, seasonal = False, m = 1):
+        print("----- ARIMA Fitting ----- \n")
         self.model = pm.auto_arima(y = self.time, d = diff, start_p = 0,
                         max_p = 5, start_q = 0, max_q = 5,
                         m = m, seasonal = seasonal,
                         stepwise = True, trace=True)
         self.model.fit(self.time)
+        print("----- Sucessfully Fitted -----")
 
     def summary(self):
         print(self.model.summary())

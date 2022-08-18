@@ -1,9 +1,6 @@
-# %%
 import matplotlib.pyplot as plt
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
-
-# %%
+import pandas as pd
+import matplotlib as mpl
 
 def timeseries_plotting(time, value):
 
@@ -19,39 +16,28 @@ def timeseries_plotting(time, value):
     plt.plot(time, value, "-", alpha=.6)
     plt.xticks(rotation=45)
 
-# %%
-def predicted_plotting(train, predicted, predicted_conf, test = []):
+def predicted_plotting(train_date, train_value, predicted_date, predicted_value, predicted_conf = [], ground_truth = []):
     
     """
     Plot predicted time-series.
     Parameter:
-      - train: train time-series sequence.
-      - predicted: predicted time-series sequence.
+      - train_date: train time-series date.
+      - train_value: train time-series value.
+      - predicted_date: test time-series date.
+      - predicted_value: test time-series value.
       - predicted_conf = (pred_lower, pred_upper): confidence interval predicted time-series sequence.
-      - test: test time-series sequence. (if exist)
+      - ground_truth: Ground truth of predicted_value (if exist)
     """
-
-    fig = go.Figure([
-    # 훈련 데이터-------------------------------------------------------
-    go.Scatter(x = train['Date'], y = train['Value'], name = "Train", mode = 'lines'
-              ,line=dict(color = 'royalblue'))
-    # 테스트 데이터------------------------------------------------------
-    , go.Scatter(x = test['Date'], y = test['Value'], name = "Test", mode = 'lines'
-                ,line = dict(color = 'rgba(0,0,30,0.5)'))
-    # 예측값-----------------------------------------------------------
-    , go.Scatter(x = predicted['Date'], y = predicted['Value'], name = "Prediction", mode = 'lines'
-                     ,line = dict(color = 'red', dash = 'dot', width=3))
+    plt.rc('font', size=12)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(train_date, train_value, color='tab:orange', label='Train')
+    ax.plot(predicted_date, predicted_value, color='tab:blue', linestyle = '--', label='Predicted')
+    if len(ground_truth) != 0:
+      ax.plot(predicted_date, ground_truth, color='tab:green', label='Ground Truth')
+    if len(predicted_conf) != 0:
+      plt.fill_between(predicted_date, predicted_conf[0], predicted_conf[1], color='blue', alpha=0.1)
+    ax.yaxis.set_major_formatter(mpl.ticker.StrMethodFormatter('{x:,.0f}'))
+    ax.set_title('Value')
     
-    # 신뢰 구간---------------------------------------------------------
-    , go.Scatter(x = test['Date'].tolist() +test['Date'][::-1].tolist() 
-                ,y = predicted_conf[1] + predicted_conf[0][::-1] ## 상위 신뢰 구간 -> 하위 신뢰 구간 역순으로
-                ,fill='toself'
-                ,fillcolor='rgba(0,0,30,0.1)'
-                ,line=dict(color='rgba(0,0,0,0)')
-                ,hoverinfo="skip"
-                ,showlegend=False)
-                ])
-    
-    fig.update_layout(height=400, width=1000, title_text="ARIMA Prediction")
     fig.show()
       
